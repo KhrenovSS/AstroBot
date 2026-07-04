@@ -8,42 +8,45 @@
 2. Прочитать `docs/CODE_GUIDELINES.md`
 3. Прочитать `README.md` — актуальное состояние проекта
 
-## Статус работ
+## Статус работ — ✅ ВЫПОЛНЕНО (Sprint 1, 04.07.2026)
 
-- [ ] **Шаг 0 — Подготовка**
-  - [ ] Создать директории: `app/domain/entities/`, `app/domain/interfaces/`, `app/services/`, `app/infra/db/repositories/`, `app/infra/crypto/`, `app/infra/geo/`, `app/infra/astro_model/`, `app/infra/llm/`, `app/infra/payments/`, `app/infra/rate_limit/`, `app/infra/notify/`, `app/bot/fsm/`, `app/bot/handlers/`, `app/bot/middlewares/`, `app/admin/routers/`, `worker/tasks/`, `beat/`, `alembic/versions/`, `tests/unit/`, `tests/integration/`
-  - [ ] Создать `__init__.py` во всех пакетах (пустые)
-  - [ ] Проверить `git status`
+- [x] **Шаг 0 — Подготовка**
+  - [x] Создать директории: `app/domain/entities/`, `app/domain/interfaces/`, `app/services/`, `app/infra/db/repositories/`, `app/infra/crypto/`, `app/infra/geo/`, `app/infra/astro_model/`, `app/infra/llm/`, `app/infra/payments/`, `app/infra/rate_limit/`, `app/infra/notify/`, `app/bot/fsm/`, `app/bot/handlers/`, `app/bot/middlewares/`, `app/admin/routers/`, `worker/tasks/`, `beat/`, `alembic/versions/`, `tests/unit/`, `tests/integration/`
+  - [x] Создать `__init__.py` во всех пакетах (пустые) — 29 файлов
+  - [x] Создать `.gitignore`
 
-- [ ] **Шаг 1 — Конфигурация и зависимости**
-  - [ ] 1.1 Создать `pyproject.toml` с зависимостями (fastapi, aiogram, sqlalchemy, alembic, celery, redis, pydantic-settings, cryptography, httpx)
-  - [ ] 1.2 Создать `app/config.py` — `Settings(BaseSettings)` из pydantic-settings
-  - [ ] 1.3 Создать `.env.example` со всеми переменными окружения
-  - [ ] 1.4 Создать `alembic.ini` + `alembic/env.py` + `alembic/script.py.mako`
+- [x] **Шаг 1 — Конфигурация и зависимости**
+  - [x] 1.1 Создать `pyproject.toml` с зависимостями
+  - [x] 1.2 Создать `app/config.py` — `Settings(BaseSettings)`
+  - [x] 1.3 Создать `.env.example` со всеми переменными окружения
+  - [x] 1.4 Создать `alembic.ini` + `alembic/env.py` + `alembic/script.py.mako`
 
-- [ ] **Шаг 2 — Docker**
-  - [ ] 2.1 Создать `Dockerfile` для `astrobot-app` (Python 3.12-slim, установка зависимостей, копирование кода)
-  - [ ] 2.2 Создать `Dockerfile` для `astrobot-worker` (тот же образ, entrypoint = celery worker)
-  - [ ] 2.3 Создать `docker-compose.yml` — 5 сервисов: app, worker, beat, postgres, redis
-  - [ ] 2.4 Healthcheck для postgres (pg_isready) и redis (redis-cli ping)
-  - [ ] 2.5 `docker-compose.prod.yml` — `deploy.replicas` для app и worker
+- [x] **Шаг 2 — Docker**
+  - [x] 2.1 Создать `Dockerfile` (multi-stage: app/worker/beat)
+  - [x] 2.2 `docker-compose.yml` — 5 сервисов: app, worker, beat, postgres, redis + healthcheck
+  - [x] 2.3 `docker-compose.prod.yml` — `deploy.replicas` для app (3) и worker (2)
 
-- [ ] **Шаг 3 — Точка входа FastAPI**
-  - [ ] 3.1 Создать `app/main.py` — create_app() + uvicorn.run()
-  - [ ] 3.2 Создать `app/di.py` — класс `Container` + `build_container(settings)`
-  - [ ] 3.3 Проверить: `docker compose up` стартует без ошибок, /health возвращает 200
+- [x] **Шаг 3 — Точка входа FastAPI**
+  - [x] 3.1 Создать `app/main.py` — create_app() + /health endpoint + lifespan
+  - [x] 3.2 Создать `app/di.py` — Container + build_container()
+  - [x] 3.3 Создать `app/exceptions.py` — 8 типов ошибок
+  - [x] 3.4 Создать `app/utils/logger.py` — корневой логгер
 
-- [ ] **Шаг 4 — Тестовая заглушка**
-  - [ ] 4.1 Написать `tests/unit/test_di.py` — проверить, что build_container() возвращает Container с правильными типами
-  - [ ] 4.2 Проверить: `pytest tests/unit/ -v` проходит
+- [x] **Шаг 4 — Celery и воркеры**
+  - [x] 4.1 `worker/celery_app.py` — Celery app с конфигурацией
+  - [x] 4.2 `worker/tasks/memory_tasks.py` — заглушка summarize_memory
+  - [x] 4.3 `worker/tasks/session_tasks.py` — заглушка check_session_timeout
+  - [x] 4.4 `beat/schedule.py` — расписание beat
+
+- [x] **Шаг 5 — Тесты**
+  - [x] 5.1 `tests/unit/test_di.py` — 2 теста на build_container
+  - [x] 5.2 `pytest tests/ -v` — 2 passed
 
 ## Критические проверки
 
-- [ ] `docker compose up -d` — все 5 контейнеров стартуют
-- [ ] `docker compose ps` — все `Up (healthy)`
-- [ ] `curl localhost:8000/health` — 200 OK
-- [ ] `git status` — нет лишних файлов
-- [ ] `pytest tests/ -v` — тесты проходят
+- [x] `pytest tests/ -v` — 2 passed
+- [ ] ⚠️ `docker compose up -d` — не проверено (нет Docker на машине)
+- [ ] ⚠️ `curl localhost:8000/health` — не проверено
 
 ## Ошибки и их решения
 

@@ -1,0 +1,25 @@
+services:
+  postgres:
+    deploy:
+      replicas: 1
+
+  redis:
+    deploy:
+      replicas: 1
+
+  astrobot-app:
+    deploy:
+      replicas: 3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  astrobot-worker:
+    deploy:
+      replicas: 2
+
+  astrobot-beat:
+    deploy:
+      replicas: 1
