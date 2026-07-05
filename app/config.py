@@ -11,8 +11,12 @@ class Settings(BaseSettings):
     # Telegram
     telegram_bot_token: str = ""
 
-    # LLM
+    # LLM (Anthropic)
     anthropic_api_key: str = ""
+    anthropic_model: str = "claude-sonnet-4-20250514"
+    anthropic_max_tokens: int = 4096
+    anthropic_temperature: float = 0.7
+    anthropic_api_base: str = "https://api.anthropic.com"
 
     # Whisper
     openai_api_key: str = ""
@@ -48,6 +52,11 @@ class Settings(BaseSettings):
     free_trial_cumulative_seconds: int = 3600
     astrobot_host: str = "0.0.0.0"
     astrobot_port: int = 8000
+
+    # Chat settings
+    semantic_check_interval: int = 5  # messages_since_last_semantic_check before LLM check
+    n_system_prompt: str = "Ты — предиктивный астролог. Интерпретируй данные натальной матрицы и общайся с пользователем. Не давай медицинских, юридических или финансовых советов."
+    explicit_end_phrases: list[str] = ["пока", "до свидания", "до встречи", "всего доброго", "bye", "goodbye"]
 
     # Postgres (Docker)
     postgres_user: str = "astrobot"

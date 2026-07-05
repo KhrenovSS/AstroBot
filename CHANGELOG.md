@@ -55,8 +55,21 @@ All notable changes to this project are tracked here.
 - **Конфигурация**: `app/config.py` — настройки Nominatim (url, user_agent, timeout)
 - **Тесты**: 9 unit-тестов (5 для ConceptionService, 4 для OnboardingService)
 
+## [05.07.2026] — Sprint 4: LLM, память, сессии, Celery
+
+### Added
+- **AnthropicClient**: `app/infra/llm/anthropic_client.py` — реализация LLMProvider через Anthropic Claude API (generate_reply, summarize, classify_session_end)
+- **PromptEngineeredAstroModel**: `app/infra/astro_model/prompt_engineered.py` — MVP AstroModelProvider, генерация AstroMatrix через LLM
+- **EphemerisBasedAstroModel**: `app/infra/astro_model/ephemeris_based.py` — заглушка для будущей swisseph-реализации
+- **MemoryResolver**: `app/services/memory_resolver.py` — суммаризация диалогов, конфликт-резолюция через optimistic lock
+- **SessionService**: `app/services/session_service.py` — lifecycle сессий (get_or_create, on_message_processed с детектором конца сессии, end_session, check_timeouts)
+- **ChatService**: `app/services/chat_service.py` — полная оркестрация чата: user → session → astro_matrix → LLM → reply → session_end_check
+- **Celery tasks**: `worker/tasks/memory_tasks.py` (summarize_memory) и `worker/tasks/session_tasks.py` (check_session_timeout) — реальная реализация через asyncio.run + DI
+- **Chat handler**: `app/bot/handlers/chat.py` — Aiogram-хендлеры /help, /new, обработка сообщений
+- **DI-контейнер**: `app/di.py` — добавлены AnthropicClient, PromptEngineeredAstroModel, SessionService, MemoryResolver, ChatService
+- **Конфигурация**: `app/config.py` — anthropic_model, anthropic_max_tokens, anthropic_temperature, anthropic_api_base, semantic_check_interval, n_system_prompt, explicit_end_phrases
+- **Тесты**: 12 новых unit-тестов (ChatService — 5, SessionService — 7, PromptEngineeredAstroModel — 3)
+
 ---
 
-
-
-*Версия: 0.3.0*
+*Версия: 0.4.0*

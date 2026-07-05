@@ -36,7 +36,7 @@ Docker НЕ установлен — будет добавлен при необ
 - **Sprint 1 завершён (04.07.2026)**: скелет проекта, Docker-инфраструктура, конфигурация, базовая архитектура
 - **Sprint 2 завершён (04.07.2026)**: SQLAlchemy модели, Alembic миграция (0001), AES-256-GCM шифрование, ABC-интерфейсы, репозитории (User, Session, Memory, Transaction), DI-контейнер расширен, 27 unit-тестов
 - **Sprint 3 — завершён (05.07.2026)**: Онбординг, геокодинг (Nominatim), FSM (Aiogram), conception_time, 9 unit-тестов
-- **Sprint 4 — не начат**: LLM, память, сессии, Celery
+- **Sprint 4 — завершён (05.07.2026)**: LLM (Anthropic Claude), PromptEngineeredAstroModel, ChatService, SessionService, MemoryResolver, Celery tasks, chat handler, 12 новых тестов
 - **Sprint 5 — не начат**: Лимиты, тарифы, платежи, Admin API
 
 ## Документация для разработки
@@ -71,7 +71,7 @@ Docker НЕ установлен — будет добавлен при необ
 11. **PII-безопасность** — `encrypted_birth_data` никогда не логировать и не передавать в Celery-таски сырым (только `user_id`).
 12. **Идемпотентность платежей** — `UNIQUE` constraint на `transactions(provider_transaction_id)`.
 
-## Структура файлов (актуальная, Sprint 1)
+## Структура файлов (актуальная, Sprint 4)
 
 ```
 astrobot/
@@ -98,14 +98,14 @@ astrobot/
 │   ├── domain/
 │   │   ├── entities/           # User, ChatSession, MemorySummary, Transaction, AstroMatrix (Phase 2)
 │   │   └── interfaces/         # UserRepository, SessionRepository, MemoryRepository, TransactionRepository, AstroModelProvider, LLMProvider, PaymentProvider, RateLimiter (Phase 2)
-│   ├── services/               # conception_service.py, onboarding_service.py (Phase 3)
+│   ├── services/               # conception_service.py, onboarding_service.py (Phase 3), chat_service.py, session_service.py, memory_resolver.py (Sprint 4)
 │   ├── infra/
 │   │   ├── db/models.py        # User, ChatSession, MemorySummary, Transaction (Phase 2)
 │   │   ├── db/repositories.py  # SQLAlchemy реализации репозиториев (Phase 2)
 │   │   ├── crypto/aes_cipher.py   # AES-256-GCM (Phase 2)
 │   │   ├── geo/                # nominatim_client.py (Phase 3)
-│   │   ├── astro_model/        # пусто
-│   │   ├── llm/                # пусто
+│   │   ├── astro_model/        # prompt_engineered.py, ephemeris_based.py (Sprint 4)
+│   │   ├── llm/                # anthropic_client.py (Sprint 4)
 │   │   ├── payments/           # пусто
 │   │   ├── rate_limit/         # пусто
 │   │   └── notify/             # пусто
@@ -221,10 +221,10 @@ def apply_payment(result):
 | **1** — Скелет + Docker | ✅ **Завершён** | Структура, docker-compose, FastAPI entrypoint, config, DI, celery, beat, alembic, тесты |
 | **2** — БД + AES + интерфейсы | ✅ **Завершён** | SQLAlchemy models, Alembic миграции, AES-256-GCM, ABC интерфейсы, репозитории |
 | **3** — Онбординг + FSM | ✅ **Завершён** | Aiogram FSM, геокодинг (Nominatim), генерация conception_time, Whisper |
-| **4** — LLM + память + сессии | ⏳ Ожидает | Anthropic LLM, суммаризация, конфликт-резолюция, сессия lifecycle, Celery tasks |
+| **4** — LLM + память + сессии | ✅ **Завершён** | Anthropic LLM, суммаризация, конфликт-резолюция, сессия lifecycle, Celery tasks |
 | **5** — Лимиты + платежи + Admin | ⏳ Ожидает | Redis-лимиты, тарифы, CryptoBot, Telegram Stars, Admin API |
 
-**Следующий шаг:** Sprint 4 — LLM-движок, память, сессии, Celery.
+**Следующий шаг:** Sprint 5 — Лимиты, тарифы, платежи, Admin API.
 
 ---
 
