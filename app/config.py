@@ -32,6 +32,11 @@ class Settings(BaseSettings):
     # Payments
     crypto_bot_token: str = ""
 
+    # Geocoding (Nominatim)
+    nominatim_url: str = "https://nominatim.openstreetmap.org"
+    nominatim_user_agent: str = "AstroBot/1.0"
+    geocoding_timeout: int = 10
+
     # Admin API
     secret_key: str = ""
 

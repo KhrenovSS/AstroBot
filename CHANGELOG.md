@@ -41,6 +41,22 @@ All notable changes to this project are tracked here.
 - **Исключения**: `app/exceptions.py` — добавлены AuthenticationError, SessionEndError, MemoryConflictError
 - **Тесты**: 27 unit-тестов (DI, AES-шифрование, репозитории)
 
+## [05.07.2026] — Sprint 3: онбординг, FSM, геокодинг, conception_time
+
+### Added
+- **FSM состояния**: `app/bot/fsm/onboarding_states.py` — Aiogram StatesGroup (ASK_BIRTH_DATE → ASK_BIRTH_PLACE → ASK_BIRTH_TIME → CONFIRM_DATA → COMPLETE)
+- **BirthData entity**: `app/domain/entities/birth_data.py` — Pydantic-модель для сбора ПДн (дата/место/время рождения, данные родителей)
+- **GeoProvider interface**: `app/domain/interfaces/geo.py` — ABC-контракт для геокодинга
+- **NominatimClient**: `app/infra/geo/nominatim_client.py` — реализация GeoProvider через Nominatim (OpenStreetMap) с определением таймзоны
+- **ConceptionService**: `app/services/conception_service.py` — детерминированная генерация conception_time (SHA-256 seed → offset в диапазоне 266–287 дней до рождения)
+- **OnboardingService**: `app/services/onboarding_service.py` — use-case онбординга: создание пользователя, сбор ПДн, геокодинг, шифрование (AES-256-GCM), генерация conception_time, переключение в ACTIVE
+- **Onboarding handler**: `app/bot/handlers/onboarding.py` — Aiogram-хендлеры для /start и FSM-шагов онбординга
+- **DI-контейнер**: `app/di.py` — добавлены GeoProvider (NominatimClient), ConceptionService, OnboardingService
+- **Конфигурация**: `app/config.py` — настройки Nominatim (url, user_agent, timeout)
+- **Тесты**: 9 unit-тестов (5 для ConceptionService, 4 для OnboardingService)
+
 ---
+
+
 
 *Версия: 0.3.0*

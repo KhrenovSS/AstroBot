@@ -35,7 +35,7 @@ Docker НЕ установлен — будет добавлен при необ
 ### Текущий статус
 - **Sprint 1 завершён (04.07.2026)**: скелет проекта, Docker-инфраструктура, конфигурация, базовая архитектура
 - **Sprint 2 завершён (04.07.2026)**: SQLAlchemy модели, Alembic миграция (0001), AES-256-GCM шифрование, ABC-интерфейсы, репозитории (User, Session, Memory, Transaction), DI-контейнер расширен, 27 unit-тестов
-- **Sprint 3 — не начат**: Онбординг, геокодинг, FSM
+- **Sprint 3 — завершён (05.07.2026)**: Онбординг, геокодинг (Nominatim), FSM (Aiogram), conception_time, 9 unit-тестов
 - **Sprint 4 — не начат**: LLM, память, сессии, Celery
 - **Sprint 5 — не начат**: Лимиты, тарифы, платежи, Admin API
 
@@ -98,20 +98,20 @@ astrobot/
 │   ├── domain/
 │   │   ├── entities/           # User, ChatSession, MemorySummary, Transaction, AstroMatrix (Phase 2)
 │   │   └── interfaces/         # UserRepository, SessionRepository, MemoryRepository, TransactionRepository, AstroModelProvider, LLMProvider, PaymentProvider, RateLimiter (Phase 2)
-│   ├── services/               # пусто (Phase 3)
+│   ├── services/               # conception_service.py, onboarding_service.py (Phase 3)
 │   ├── infra/
 │   │   ├── db/models.py        # User, ChatSession, MemorySummary, Transaction (Phase 2)
 │   │   ├── db/repositories.py  # SQLAlchemy реализации репозиториев (Phase 2)
 │   │   ├── crypto/aes_cipher.py   # AES-256-GCM (Phase 2)
-│   │   ├── geo/                # пусто
+│   │   ├── geo/                # nominatim_client.py (Phase 3)
 │   │   ├── astro_model/        # пусто
 │   │   ├── llm/                # пусто
 │   │   ├── payments/           # пусто
 │   │   ├── rate_limit/         # пусто
 │   │   └── notify/             # пусто
-│   ├── bot/                    # пусто (Phase 3)
-│   │   ├── fsm/
-│   │   ├── handlers/
+│   ├── bot/                    # onboarding.py (Phase 3)
+│   │   ├── fsm/                # onboarding_states.py (Phase 3)
+│   │   ├── handlers/           # onboarding.py (Phase 3)
 │   │   └── middlewares/
 │   └── admin/                  # пусто (Phase 5)
 │       └── routers/
@@ -220,11 +220,11 @@ def apply_payment(result):
 |--------|--------|------------|
 | **1** — Скелет + Docker | ✅ **Завершён** | Структура, docker-compose, FastAPI entrypoint, config, DI, celery, beat, alembic, тесты |
 | **2** — БД + AES + интерфейсы | ✅ **Завершён** | SQLAlchemy models, Alembic миграции, AES-256-GCM, ABC интерфейсы, репозитории |
-| **3** — Онбординг + FSM | ⏳ Ожидает | Aiogram FSM, геокодинг (Nominatim), генерация conception_time, Whisper |
+| **3** — Онбординг + FSM | ✅ **Завершён** | Aiogram FSM, геокодинг (Nominatim), генерация conception_time, Whisper |
 | **4** — LLM + память + сессии | ⏳ Ожидает | Anthropic LLM, суммаризация, конфликт-резолюция, сессия lifecycle, Celery tasks |
 | **5** — Лимиты + платежи + Admin | ⏳ Ожидает | Redis-лимиты, тарифы, CryptoBot, Telegram Stars, Admin API |
 
-**Следующий шаг:** Sprint 3 — начать с онбординга, FSM (Aiogram), геокодинга (Nominatim), генерации conception_time.
+**Следующий шаг:** Sprint 4 — LLM-движок, память, сессии, Celery.
 
 ---
 
