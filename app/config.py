@@ -11,12 +11,10 @@ class Settings(BaseSettings):
     # Telegram
     telegram_bot_token: str = ""
 
-    # LLM (Anthropic)
-    anthropic_api_key: str = ""
-    anthropic_model: str = "claude-sonnet-4-20250514"
-    anthropic_max_tokens: int = 4096
-    anthropic_temperature: float = 0.7
-    anthropic_api_base: str = "https://api.anthropic.com"
+    # LLM (Ollama — local)
+    ollama_api_base: str = "http://localhost:11434"
+    ollama_model: str = "qwen2.5:0.5b"
+    ollama_timeout: int = 120
 
     # Whisper
     openai_api_key: str = ""

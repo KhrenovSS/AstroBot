@@ -7,6 +7,7 @@ Telegram-бот «предиктивный астролог» на основе 
 Python 3.12 + FastAPI + Aiogram 3 + SQLAlchemy 2.0 (async) + PostgreSQL 16 + Redis 7 + Celery.
 Docker Compose — 5 контейнеров (app, worker, beat, postgres, redis).
 Архитектура — Clean Architecture (4 слоя), ручной DI (`app/di.py`).
+LLM — **Ollama** (локально, модель `qwen2.5:0.5b`). Без внешних API-ключей.
 
 ## Окружение (local dev)
 
@@ -17,6 +18,18 @@ Docker Compose — 5 контейнеров (app, worker, beat, postgres, redis)
 | Установка зависимостей | `pip install --break-system-packages -e ".[dev]"` |
 | Запуск тестов | `pytest tests/ -v` (после добавления `~/.local/bin` в PATH) |
 | PATH для утилит | `export PATH="$HOME/.local/bin:$PATH"` |
+
+### Ollama (локальная LLM)
+Запуск Ollama (если не запущен):
+```bash
+ollama serve &>/tmp/ollama_serve.log &
+```
+Проверка, что сервер и модель готовы:
+```bash
+curl -s http://localhost:11434/api/tags
+```
+Список доступных моделей: `ollama list`. Скачать другую модель: `ollama pull <model>`.
+Актуальная модель задаётся в `.env`: `OLLAMA_MODEL=qwen2.5:0.5b`.
 
 ### Sudo
 Пароль sudo сохранён в `.env` (в `.gitignore`, не коммитится):
@@ -36,7 +49,7 @@ Docker НЕ установлен — будет добавлен при необ
 - **Sprint 1 завершён (04.07.2026)**: скелет проекта, Docker-инфраструктура, конфигурация, базовая архитектура
 - **Sprint 2 завершён (04.07.2026)**: SQLAlchemy модели, Alembic миграция (0001), AES-256-GCM шифрование, ABC-интерфейсы, репозитории (User, Session, Memory, Transaction), DI-контейнер расширен, 27 unit-тестов
 - **Sprint 3 — завершён (05.07.2026)**: Онбординг, геокодинг (Nominatim), FSM (Aiogram), conception_time, 9 unit-тестов
-- **Sprint 4 — завершён (05.07.2026)**: LLM (Anthropic Claude), PromptEngineeredAstroModel, ChatService, SessionService, MemoryResolver, Celery tasks, chat handler, 12 новых тестов
+- **Sprint 4 — завершён (05.07.2026)**: LLM (Ollama локально), PromptEngineeredAstroModel, ChatService, SessionService, MemoryResolver, Celery tasks, chat handler, 12 новых тестов
 - **Sprint 5 — не начат**: Лимиты, тарифы, платежи, Admin API
 
 ## Документация для разработки
@@ -105,7 +118,7 @@ astrobot/
 │   │   ├── crypto/aes_cipher.py   # AES-256-GCM (Phase 2)
 │   │   ├── geo/                # nominatim_client.py (Phase 3)
 │   │   ├── astro_model/        # prompt_engineered.py, ephemeris_based.py (Sprint 4)
-│   │   ├── llm/                # anthropic_client.py (Sprint 4)
+│   │   ├── llm/                # ollama_client.py (Sprint 4)
 │   │   ├── payments/           # пусто
 │   │   ├── rate_limit/         # пусто
 │   │   └── notify/             # пусто
@@ -221,7 +234,7 @@ def apply_payment(result):
 | **1** — Скелет + Docker | ✅ **Завершён** | Структура, docker-compose, FastAPI entrypoint, config, DI, celery, beat, alembic, тесты |
 | **2** — БД + AES + интерфейсы | ✅ **Завершён** | SQLAlchemy models, Alembic миграции, AES-256-GCM, ABC интерфейсы, репозитории |
 | **3** — Онбординг + FSM | ✅ **Завершён** | Aiogram FSM, геокодинг (Nominatim), генерация conception_time, Whisper |
-| **4** — LLM + память + сессии | ✅ **Завершён** | Anthropic LLM, суммаризация, конфликт-резолюция, сессия lifecycle, Celery tasks |
+| **4** — LLM + память + сессии | ✅ **Завершён** | Ollama, суммаризация, конфликт-резолюция, сессия lifecycle, Celery tasks |
 | **5** — Лимиты + платежи + Admin | ⏳ Ожидает | Redis-лимиты, тарифы, CryptoBot, Telegram Stars, Admin API |
 
 **Следующий шаг:** Sprint 5 — Лимиты, тарифы, платежи, Admin API.

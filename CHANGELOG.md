@@ -70,6 +70,24 @@ All notable changes to this project are tracked here.
 - **Конфигурация**: `app/config.py` — anthropic_model, anthropic_max_tokens, anthropic_temperature, anthropic_api_base, semantic_check_interval, n_system_prompt, explicit_end_phrases
 - **Тесты**: 12 новых unit-тестов (ChatService — 5, SessionService — 7, PromptEngineeredAstroModel — 3)
 
+## [05.07.2026] — Sprint 4 (hotfix): Anthropic/Groq → локальный Ollama
+
+### Changed
+- **Миграция LLM**: Anthropic Claude → Groq (не заработал) → **Ollama локально**
+- `app/config.py` — `anthropic_*` / `groq_*` → `ollama_*` (api_base, model, timeout)
+- `app/di.py` — `AnthropicClient` / `GroqClient` → `OllamaClient`
+- `app/infra/llm/anthropic_client.py` / `groq_client.py` → `app/infra/llm/ollama_client.py`
+- `.env` / `.env.example` — все ключи API удалены, LLM работает локально без ключей
+
+### Added
+- **Ollama установлен** (v0.31.1), модель `qwen2.5:0.5b` (494MB) скачана
+- `app/infra/llm/ollama_client.py` — реализация LLMProvider через локальный Ollama API (`POST /api/chat`)
+- Инструкция по запуску Ollama в `AGENTS.md`
+
+### Removed
+- Зависимость от внешних API-ключей (Anthropic, Groq) — проект полностью автономен
+- `app/infra/llm/anthropic_client.py` — удалён из импортов (файл сохранён для истории)
+
 ---
 
-*Версия: 0.4.0*
+*Версия: 0.4.1*

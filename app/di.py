@@ -23,7 +23,7 @@ from app.infra.db.repositories import (
     SqlAlchemyUserRepository,
 )
 from app.infra.geo.nominatim_client import NominatimClient
-from app.infra.llm.anthropic_client import AnthropicClient
+from app.infra.llm.ollama_client import OllamaClient
 from app.services.chat_service import ChatService
 from app.services.conception_service import ConceptionService
 from app.services.memory_resolver import MemoryResolver
@@ -76,8 +76,8 @@ def build_container(settings: Settings) -> Container:
     # LLM и AstroModel (LLM and AstroModel)
     llm_provider: LLMProvider | None = None
     astro_model: AstroModelProvider | None = None
-    if settings.anthropic_api_key:
-        llm_provider = AnthropicClient(settings)
+    if settings.ollama_api_base:
+        llm_provider = OllamaClient(settings)
         astro_model = PromptEngineeredAstroModel(llm_provider)
 
     # Сервисы сессий и памяти (Session and memory services)

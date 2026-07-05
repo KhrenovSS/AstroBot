@@ -145,8 +145,7 @@ class FakeMemoryRepository(MemoryRepository):
 @pytest.fixture
 def settings():
     return Settings(
-        anthropic_api_key="test-key",
-        anthropic_model="claude-sonnet-4-20250514",
+        ollama_api_base="http://localhost:11434",
         semantic_check_interval=5,
         explicit_end_phrases=["пока", "до свидания"],
         n_system_prompt="Ты — предиктивный астролог.",
