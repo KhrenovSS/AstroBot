@@ -88,6 +88,24 @@ All notable changes to this project are tracked here.
 - Зависимость от внешних API-ключей (Anthropic, Groq) — проект полностью автономен
 - `app/infra/llm/anthropic_client.py` — удалён из импортов (файл сохранён для истории)
 
+## [05.07.2026] — Sprint 4 hotfix + devops: локальный запуск, обход SNI-блокировки
+
+### Added
+- **DI middleware**: `app/bot/middlewares/__init__.py` — DIMiddleware, внедряющий сервисы из контейнера в хендлеры aiogram
+- **Bot wiring**: `app/bot/__init__.py` — setup_dispatcher(), сборка Dispatcher с роутерами и middleware
+- **Polling в main.py**: `app/main.py` — создание Bot и Dispatcher, запуск polling в background task через lifespan
+- **start_bot.sh**: скрипт быстрого запуска сервера локально
+- **Локальная инфраструктура**: установлены PostgreSQL 16 и Redis 7, создана БД `astrobot`, накатаны миграции
+
+### Changed
+- `.env` — обновлён: токен бота, AES-ключ, URLs переписаны на `localhost` (вместо docker-hostname)
+
+### Infrastructure
+- `/etc/hosts` — добавлен `149.154.166.110 api.telegram.org` (обход DPI/SNI-блокировки Telegram)
+
+### Тесты
+- 52/52 unit-тестов PASSED ✅
+
 ---
 
-*Версия: 0.4.1*
+*Версия: 0.4.2*

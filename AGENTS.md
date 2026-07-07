@@ -31,6 +31,22 @@ curl -s http://localhost:11434/api/tags
 Список доступных моделей: `ollama list`. Скачать другую модель: `ollama pull <model>`.
 Актуальная модель задаётся в `.env`: `OLLAMA_MODEL=qwen2.5:0.5b`.
 
+### PostgreSQL и Redis (локально)
+Установлены локально через apt:
+```bash
+sudo apt install postgresql postgresql-contrib redis-server
+sudo systemctl start postgresql redis-server
+```
+БД и пользователь созданы: `astrobot` / `astrobot_password`.
+Redis работает на `localhost:6379`.
+
+### /etc/hosts (обход SNI-блокировки)
+Если `api.telegram.org` блокируется DPI, добавлен прямой IP:
+```
+149.154.166.110 api.telegram.org
+```
+Проверка: `curl -s https://api.telegram.org/bot<TOKEN>/getMe`
+
 ### Sudo
 Пароль sudo сохранён в `.env` (в `.gitignore`, не коммитится):
 ```
@@ -50,6 +66,8 @@ Docker НЕ установлен — будет добавлен при необ
 - **Sprint 2 завершён (04.07.2026)**: SQLAlchemy модели, Alembic миграция (0001), AES-256-GCM шифрование, ABC-интерфейсы, репозитории (User, Session, Memory, Transaction), DI-контейнер расширен, 27 unit-тестов
 - **Sprint 3 — завершён (05.07.2026)**: Онбординг, геокодинг (Nominatim), FSM (Aiogram), conception_time, 9 unit-тестов
 - **Sprint 4 — завершён (05.07.2026)**: LLM (Ollama локально), PromptEngineeredAstroModel, ChatService, SessionService, MemoryResolver, Celery tasks, chat handler, 12 новых тестов
+- **Sprint 4 hotfix (05.07.2026)**: Anthropic/Groq → Ollama, проект полностью автономен
+- **Devops (05.07.2026)**: PostgreSQL 16 + Redis 7 установлены локально, bot polling в main.py, DIMiddleware, обход SNI-блокировки через /etc/hosts
 - **Sprint 5 — не начат**: Лимиты, тарифы, платежи, Admin API
 
 ## Документация для разработки
@@ -99,6 +117,7 @@ astrobot/
 ├── CHANGELOG.md
 ├── PHASE_1_PLAN.md
 ├── TECH_DEBT.md
+├── start_bot.sh              # скрипт локального запуска
 ├── docs/                       # 12 файлов документации
 ├── app/
 │   ├── __init__.py
@@ -122,17 +141,19 @@ astrobot/
 │   │   ├── payments/           # пусто
 │   │   ├── rate_limit/         # пусто
 │   │   └── notify/             # пусто
-│   ├── bot/                    # onboarding.py (Phase 3)
+│   ├── bot/                    # onboarding + chat хендлеры, FSM, DI middleware (Phase 3-4)
+│   │   ├── __init__.py          # setup_dispatcher() — сборка роутеров + middleware
 │   │   ├── fsm/                # onboarding_states.py (Phase 3)
-│   │   ├── handlers/           # onboarding.py (Phase 3)
+│   │   ├── handlers/           # onboarding.py, chat.py (Phase 3-4)
 │   │   └── middlewares/
+│   │       └── __init__.py     # DIMiddleware — внедрение сервисов из DI-контейнера
 │   └── admin/                  # пусто (Phase 5)
 │       └── routers/
 ├── worker/
 │   ├── celery_app.py           # Celery app + configure
 │   └── tasks/
-│       ├── memory_tasks.py     # заглушка
-│       └── session_tasks.py    # заглушка
+│       ├── memory_tasks.py     # summarize_memory (Sprint 4)
+│       └── session_tasks.py    # check_session_timeout (Sprint 4)
 ├── beat/
 │   └── schedule.py             # Celery beat schedule
 ├── alembic/
@@ -142,9 +163,14 @@ astrobot/
 └── tests/
     ├── conftest.py
     ├── unit/
-    │   ├── test_di.py          # 3 теста (Phase 2)
-    │   ├── test_aes_cipher.py  # 9 тестов (Phase 2)
-    │   └── test_repositories.py # 15 тестов (Phase 2)
+    │   ├── test_di.py               # 3 теста (Phase 2)
+    │   ├── test_aes_cipher.py       # 9 тестов (Phase 2)
+    │   ├── test_repositories.py     # 15 тестов (Phase 2)
+    │   ├── test_conception_service.py  # 5 тестов (Phase 3)
+    │   ├── test_onboarding_service.py  # 4 теста (Phase 3)
+    │   ├── test_astro_model.py      # 3 теста (Sprint 4)
+    │   ├── test_chat_service.py     # 5 тестов (Sprint 4)
+    │   └── test_session_service.py  # 7 тестов (Sprint 4)
     └── integration/            # пусто
 ```
 
@@ -233,8 +259,10 @@ def apply_payment(result):
 |--------|--------|------------|
 | **1** — Скелет + Docker | ✅ **Завершён** | Структура, docker-compose, FastAPI entrypoint, config, DI, celery, beat, alembic, тесты |
 | **2** — БД + AES + интерфейсы | ✅ **Завершён** | SQLAlchemy models, Alembic миграции, AES-256-GCM, ABC интерфейсы, репозитории |
-| **3** — Онбординг + FSM | ✅ **Завершён** | Aiogram FSM, геокодинг (Nominatim), генерация conception_time, Whisper |
+| **3** — Онбординг + FSM | ✅ **Завершён** | Aiogram FSM, геокодинг (Nominatim), генерация conception_time |
 | **4** — LLM + память + сессии | ✅ **Завершён** | Ollama, суммаризация, конфликт-резолюция, сессия lifecycle, Celery tasks |
+| **4 hotfix** — Anthropic → Ollama | ✅ **Завершён** | Полный переход на локальную LLM, проект автономен |
+| **Devops** — локальный запуск | ✅ **Завершён** | PostgreSQL 16, Redis 7, bot polling, DIMiddleware, обход SNI-блокировки |
 | **5** — Лимиты + платежи + Admin | ⏳ Ожидает | Redis-лимиты, тарифы, CryptoBot, Telegram Stars, Admin API |
 
 **Следующий шаг:** Sprint 5 — Лимиты, тарифы, платежи, Admin API.
