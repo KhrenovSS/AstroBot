@@ -149,6 +149,7 @@ def settings():
         semantic_check_interval=5,
         explicit_end_phrases=["пока", "до свидания"],
         n_system_prompt="Ты — предиктивный астролог.",
+        prompt_file="/tmp/nonexistent_prompt_for_tests.md",
     )
 
 

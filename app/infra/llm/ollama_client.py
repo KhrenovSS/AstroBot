@@ -18,6 +18,7 @@ class OllamaClient(LLMProvider):
         self._model = settings.ollama_model
         self._api_base = settings.ollama_api_base.rstrip("/")
         self._timeout = settings.ollama_timeout
+        self._temperature = settings.llm_temperature
 
     async def generate_reply(
         self, system_prompt: str, history: list[dict], user_message: str
@@ -31,6 +32,9 @@ class OllamaClient(LLMProvider):
             "model": self._model,
             "messages": messages,
             "stream": False,
+            "options": {
+                "temperature": self._temperature,
+            },
         }
 
         try:
@@ -62,6 +66,9 @@ class OllamaClient(LLMProvider):
                 {"role": "user", "content": f"Суммаризируй этот диалог:\n\n{messages}"},
             ],
             "stream": False,
+            "options": {
+                "temperature": self._temperature,
+            },
         }
 
         try:
@@ -104,6 +111,9 @@ class OllamaClient(LLMProvider):
                 },
             ],
             "stream": False,
+            "options": {
+                "temperature": self._temperature,
+            },
         }
 
         try:

@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, timezone
+from pathlib import Path
 
 from app.config import Settings
 from app.domain.entities.astro import AstroMatrix, GeoPoint
@@ -101,7 +102,13 @@ class ChatService:
         self, astro_data: AstroMatrix | None, memory_context: str
     ) -> str:
         """Сформировать system prompt для LLM (Build system prompt for LLM)."""
-        parts = [self._settings.n_system_prompt]
+        prompt_file = Path(self._settings.prompt_file)
+        if prompt_file.exists():
+            base_prompt = prompt_file.read_text(encoding="utf-8")
+        else:
+            base_prompt = self._settings.n_system_prompt
+
+        parts = [base_prompt]
 
         if astro_data:
             parts.append(f"\n\nДанные натальной матрицы:\n{astro_data.model_dump_json(indent=2)}")

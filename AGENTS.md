@@ -269,4 +269,19 @@ def apply_payment(result):
 
 ---
 
+## ✅ Backlog: Улучшение качества ответов (промпты) — DONE (08.07.2026)
+
+Задача: ответы бота не соответствуют концепции астролога — слишком сухие, без личности.
+
+### Что сделано:
+1. ✅ **Вынесен system prompt в отдельный файл** — `app/prompts/system_prompt.md`
+2. ✅ **Сделан детальным** — личность AstroMath, стиль, структура ответа, правила диалога, приёмы
+3. ✅ **Настроен `temperature`** в `OllamaClient` — `0.7` по умолчанию, передаётся через `options.temperature`
+4. ✅ **Обновлён `ChatService._build_system_prompt()`** — читает из `system_prompt.md` (fallback на `n_system_prompt`)
+
+### Опционально:
+- **Поставить модель побольше**: `ollama pull qwen2.5:3b`
+
+---
+
 **Если сессия прервана:** прочитать `AGENTS.md` и `README.md`.

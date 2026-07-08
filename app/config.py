@@ -54,7 +54,9 @@ class Settings(BaseSettings):
     # Chat settings
     semantic_check_interval: int = 5  # messages_since_last_semantic_check before LLM check
     n_system_prompt: str = "Ты — предиктивный астролог. Интерпретируй данные натальной матрицы и общайся с пользователем. Не давай медицинских, юридических или финансовых советов."
+    prompt_file: str = "app/prompts/system_prompt.md"
     explicit_end_phrases: list[str] = ["пока", "до свидания", "до встречи", "всего доброго", "bye", "goodbye"]
+    llm_temperature: float = 0.7
 
     # Postgres (Docker)
     postgres_user: str = "astrobot"

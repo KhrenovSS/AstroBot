@@ -106,6 +106,20 @@ All notable changes to this project are tracked here.
 ### Тесты
 - 52/52 unit-тестов PASSED ✅
 
+## [08.07.2026] — Системный промпт: вынесен в файл, улучшен для Qwen 0.5b
+
+### Added
+- **Системный промпт**: `app/prompts/system_prompt.md` — детальный prompt для AstroMath (личность, стиль, структура ответа, правила диалога, приёмы, запреты)
+- **Чтение промпта из файла**: `app/services/chat_service.py` — `_build_system_prompt()` читает `system_prompt.md`, fallback на `n_system_prompt` из конфига если файла нет
+- **Temperature в Ollama**: `app/infra/llm/ollama_client.py` — `temperature` передаётся во все три метода (`generate_reply`, `summarize`, `classify_session_end`) через `options.temperature` в теле запроса
+
+### Changed
+- `app/prompts/system_prompt.md` — перезаписан новым промптом AstroMath
+- `tests/unit/test_chat_service.py` — `prompt_file` в фикстуре `settings` переопределён на несуществующий файл для изоляции тестов
+
+### Тесты
+- 52/52 unit-тестов PASSED ✅
+
 ---
 
-*Версия: 0.4.2*
+*Версия: 0.5.0*
